@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FinanceCEO — versão guiada</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script defer src="terms.js"></script>
+  <script defer src="data.js"></script>
+  <script defer src="game.js"></script>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-badge wobble"></div>
+        <div>
+          <h1>FinanceCEO</h1>
+          <p>Simulador empresarial com explicações curtas, glossário progressivo e decisões leves para acompanhar.</p>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn small" id="how-btn">Como jogar</button>
+        <button class="btn small" id="glossary-btn">Glossário <span id="glossary-count" class="badge blue" style="margin-left:8px">0/0</span></button>
+      </div>
+    </div>
+
+    <div id="start-screen" class="screen active">
+      <div class="card hero">
+        <h2>Jogo mais calmo, mais claro e mais fácil de acompanhar</h2>
+        <p>
+          Você administra a Distribuidora Prata Ltda. por 24 meses.
+          O jogo mostra juros, crédito e termos corporativos de forma simples, com popups curtos quando aparecem pela primeira vez.
+        </p>
+        <div class="pills">
+          <span class="pill">24 meses</span>
+          <span class="pill green">Juros explicados na hora</span>
+          <span class="pill amber">Glossário progressivo</span>
+          <span class="pill red">Decisões rápidas</span>
+        </div>
+        <div class="grid grid-4" style="margin-top:8px">
+          <div class="card pad"><div class="label">Capital inicial</div><div class="value">R$ 150.000</div></div>
+          <div class="card pad"><div class="label">Dívida inicial</div><div class="value warn">R$ 30.000</div></div>
+          <div class="card pad"><div class="label">Apoio ao jogador</div><div class="value">Guiado</div></div>
+          <div class="card pad"><div class="label">Termos desbloqueáveis</div><div class="value" id="learning-count">0/0</div></div>
+        </div>
+        <div style="margin-top:18px"><button class="btn primary" id="start-btn">Iniciar jogo</button></div>
+      </div>
+    </div>
+
+    <div id="game-screen" class="screen">
+      <div class="grid grid-4" style="margin-bottom:14px">
+        <div class="card pad wobble"><div class="label">Caixa</div><div class="value" id="cash">R$ 0</div></div>
+        <div class="card pad wobble"><div class="label">Dívida</div><div class="value" id="debt">R$ 0</div></div>
+        <div class="card pad wobble"><div class="label">Score</div><div class="value" id="score">0</div></div>
+        <div class="card pad wobble"><div class="label">Mês</div><div class="value" id="month">1 / 24</div></div>
+      </div>
+
+      <div class="card pad" style="margin-bottom:14px">
+        <div class="card-title"><h3>Menu rápido</h3></div>
+        <div class="grid grid-2" style="gap:10px">
+          <button class="btn small icon-btn wobble-delay-1" onclick="openQuickMenu()"><img src="icons/chart.svg" class="icon" alt="Resumo">Resumo</button>
+          <button class="btn small icon-btn wobble-delay-2" onclick="openHealthMenu()"><img src="icons/shield.svg" class="icon" alt="Saúde">Saúde</button>
+          <button class="btn small icon-btn wobble-delay-3" onclick="openHistoryMenu()"><img src="icons/calendar.svg" class="icon" alt="Histórico">Histórico</button>
+          <button class="btn small icon-btn wobble-delay-4" onclick="openGlossary()"><img src="icons/book.svg" class="icon" alt="Glossário">Glossário</button>
+        </div>
+      </div>
+
+      <div class="card pad" style="margin-bottom:14px">
+        <div class="card-title"><h3 id="phase-label">Relatório do mês</h3><span class="badge amber">Dica</span></div>
+        <div id="event-area"></div>
+        <div id="formula" style="margin-top:12px"></div>
+        <div id="choices" style="margin-top:12px"></div>
+        <div id="action-row" style="margin-top:14px"></div>
+      </div>
+
+      <div class="card pad hidden" id="advanced-data">
+        <div class="card-title"><h3>Dados avançados</h3></div>
+        <div id="cash-history" class="grid" style="grid-template-columns:repeat(18,1fr);align-items:end;height:90px"></div>
+        <div class="mini-note" style="margin:12px 0 10px">Acompanhe o fluxo de caixa e o histórico de decisões.</div>
+        <div class="log" id="log"></div>
+      </div>
+    </div>
+
+    <div id="end-screen" class="screen">
+      <div class="card hero">
+        <h2 id="end-title">Resultado final</h2>
+        <div class="grid grid-4" style="margin-top:14px">
+          <div class="card pad"><div class="label">Caixa final</div><div class="value" id="end-cash">-</div></div>
+          <div class="card pad"><div class="label">Dívida restante</div><div class="value" id="end-debt">-</div></div>
+          <div class="card pad"><div class="label">Pontuação</div><div class="value" id="end-score">-</div></div>
+          <div class="card pad"><div class="label">Classificação</div><div id="end-badge"></div></div>
+        </div>
+        <p id="end-summary" style="margin-top:16px"></p>
+        <button class="btn primary" style="margin-top:10px" onclick="startGame()">Jogar novamente</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="overlay" class="overlay hidden">
+    <div id="overlay-panel" class="modal">
+      <div class="modal-header">
+        <div>
+          <h3 id="overlay-title"></h3>
+          <p id="overlay-subtitle"></p>
+        </div>
+        <button class="btn small ghost" onclick="closeOverlay()">✕</button>
+      </div>
+      <div id="overlay-body" class="modal-body"></div>
+      <div class="modal-body footer-actions" id="overlay-footer"></div>
+    </div>
+  </div>
+</body>
+</html>
