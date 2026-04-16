@@ -31,12 +31,13 @@
         <h2>Uma campanha mais longa, mais dinâmica e bem mais imprevisível</h2>
         <p>
           Você administra a Distribuidora Prata Ltda. por 60 meses.
-          A cada ciclo, o mercado muda, o governo pode apertar a taxa Selic, crises globais podem surgir e o seu caixa precisa sobreviver.
+          A cada ciclo, o mercado muda, o governo pode apertar a taxa Selic, crises globais podem surgir e o seu caixa, patrimônio e imóveis precisam sobreviver.
         </p>
         <div class="pills">
           <span class="pill">60 meses</span>
           <span class="pill green">Eventos macroeconômicos</span>
           <span class="pill amber">Lucro e margem visíveis</span>
+          <span class="pill red">Patrimônio e imóveis</span>
           <span class="pill red">Mais risco, mais escolha</span>
         </div>
         <div class="grid grid-4" style="margin-top:8px">
@@ -55,6 +56,12 @@
         <div class="card pad wobble"><div class="label">Dívida</div><div class="value" id="debt">R$ 0</div></div>
         <div class="card pad wobble"><div class="label">Score</div><div class="value" id="score">0</div></div>
         <div class="card pad wobble"><div class="label">Mês</div><div class="value" id="month">1 / 60</div></div>
+      </div>
+
+      <div class="grid grid-3" style="margin-bottom:14px">
+        <div class="card pad stat-card"><div class="label">Patrimônio</div><div class="value" id="patrimony">R$ 0</div></div>
+        <div class="card pad stat-card"><div class="label">Custos mensais</div><div class="value" id="monthly-costs">R$ 0</div></div>
+        <div class="card pad stat-card"><div class="label">Imóveis</div><div class="value" id="office-count">0 imóveis</div></div>
       </div>
 
       <div class="grid grid-4" style="margin-bottom:14px">
@@ -99,6 +106,7 @@
           <button class="btn small icon-btn wobble-delay-3" onclick="openProfitMenu()"><img src="calendar.svg" class="icon" alt="Lucros">Lucros</button>
           <button class="btn small icon-btn wobble-delay-1" onclick="openHealthMenu()"><img src="shield.svg" class="icon" alt="Saúde">Saúde</button>
           <button class="btn small icon-btn wobble-delay-2" onclick="openHistoryMenu()"><img src="calendar.svg" class="icon" alt="Histórico">Histórico</button>
+          <button class="btn small icon-btn wobble-delay-3" onclick="openOfficeMenu()"><img src="wallet.svg" class="icon" alt="Escritórios">Escritórios</button>
           <button class="btn small icon-btn wobble-delay-4" onclick="openGlossary()"><img src="book.svg" class="icon" alt="Glossário">Glossário</button>
         </div>
       </div>
@@ -130,6 +138,17 @@
           </div>
         </div>
         <div class="mini-note" style="margin:12px 0 10px">Acompanhe o fluxo de caixa, a variação do mercado e a trilha das decisões.</div>
+        <div class="grid grid-2" style="margin-bottom:12px">
+          <div class="card pad">
+            <div class="card-title"><h3>Escritório atual</h3><span class="badge blue">Patrimônio</span></div>
+            <div class="tiny" id="office-current">Sem escritório</div>
+            <div class="tiny" style="margin-top:8px">Passivo de financiamento: <strong id="finance-liability">R$ 0</strong></div>
+          </div>
+          <div class="card pad">
+            <div class="card-title"><h3>Custos fixos</h3><span class="badge amber">Mensal</span></div>
+            <div id="cost-breakdown"></div>
+          </div>
+        </div>
         <div class="log" id="log"></div>
       </div>
     </div>

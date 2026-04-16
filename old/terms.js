@@ -1,3 +1,4 @@
+
 window.TERMS = {
   juros_simples: {
     title: "Juros simples",
@@ -106,5 +107,77 @@ window.TERMS = {
     short: "Tudo que a empresa possui e pode gerar valor.",
     explanation: "Ativos incluem dinheiro, estoque, máquinas, veículos e recebíveis. Eles sustentam a empresa e podem ser usados para gerar receita.",
     analogy: "O que a empresa tem na mão."
+  },
+  selic: {
+    title: "Selic",
+    short: "Taxa básica de juros da economia.",
+    explanation: "A Selic influencia empréstimos, investimentos e o ritmo da economia. Quando sobe, o crédito costuma ficar mais caro e o apetite por consumo tende a cair.",
+    analogy: "É o preço-base do dinheiro no país."
+  },
+  inflacao: {
+    title: "Inflação",
+    short: "Alta geral dos preços.",
+    explanation: "Quando a inflação sobe, comprar mercadorias e repor estoque fica mais caro. Isso pressiona margens e obriga reajustes de preço.",
+    analogy: "O mesmo dinheiro compra menos coisas."
+  },
+  cambio: {
+    title: "Câmbio",
+    short: "Preço da moeda estrangeira.",
+    explanation: "O câmbio afeta importações, exportações e insumos dolarizados. Uma alta brusca pode aumentar o custo operacional rapidamente.",
+    analogy: "É a ponte entre moedas diferentes."
+  },
+  demanda: {
+    title: "Demanda",
+    short: "Vontade e capacidade de compra do mercado.",
+    explanation: "Se a demanda está forte, vender fica mais fácil. Se enfraquece, a empresa precisa competir mais por preço e atenção.",
+    analogy: "É a fome do mercado."
+  },
+  pib: {
+    title: "PIB",
+    short: "Tamanho da economia em um período.",
+    explanation: "O PIB mostra se a economia está crescendo ou encolhendo. Crescimento de PIB geralmente favorece vendas e confiança.",
+    analogy: "É o placar geral da economia."
+  },
+  margem_bruta: {
+    title: "Margem bruta",
+    short: "O que sobra após o custo direto da mercadoria.",
+    explanation: "A margem bruta mostra quanto da receita sobra depois de pagar o custo do produto ou serviço. Ajuda a entender o potencial do negócio.",
+    analogy: "É o primeiro respiro do faturamento."
+  },
+  margem_liquida: {
+    title: "Margem líquida",
+    short: "Lucro final em relação à receita.",
+    explanation: "É a porcentagem que sobra depois de todas as despesas, juros e impostos. É uma das melhores formas de ver se a operação é realmente saudável.",
+    analogy: "É o que sobra de verdade no fim."
+  },
+  ebitda: {
+    title: "EBITDA",
+    short: "Lucro operacional antes de juros, impostos, depreciação e amortização.",
+    explanation: "Serve para comparar a eficiência do negócio sem o ruído da estrutura financeira. Não é lucro final, mas ajuda a enxergar a operação.",
+    analogy: "É o motor antes do resto da máquina pesar."
+  },
+  spread_bancario: {
+    title: "Spread bancário",
+    short: "Diferença entre o custo do banco e o que ele cobra.",
+    explanation: "Os bancos captam dinheiro em um custo e emprestam em outro mais alto. Essa diferença é uma das fontes de lucro do sistema financeiro.",
+    analogy: "É a margem do banco no crédito."
+  },
+  reserva_emergencia: {
+    title: "Reserva de emergência",
+    short: "Dinheiro guardado para imprevistos.",
+    explanation: "É um colchão de segurança para pagar contas mesmo quando surgem eventos ruins, quedas de venda ou atrasos de clientes.",
+    analogy: "É o airbag do caixa."
+  },
+  ponto_equilibrio: {
+    title: "Ponto de equilíbrio",
+    short: "Receita mínima para não ter prejuízo.",
+    explanation: "É o nível em que a receita cobre todas as despesas fixas e variáveis. Abaixo disso, a empresa começa a perder dinheiro.",
+    analogy: "É a linha que separa lucro de prejuízo."
+  },
+  diversificacao: {
+    title: "Diversificação",
+    short: "Espalhar risco em várias opções.",
+    explanation: "Em vez de depender de uma só aposta, a empresa distribui recursos, clientes ou investimentos em mais de uma frente para reduzir a chance de perda grande.",
+    analogy: "Não colocar todos os ovos na mesma cesta."
   }
 };

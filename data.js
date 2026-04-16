@@ -1022,3 +1022,1129 @@ window.GAME_DATA = {
     ],
   },
 };
+
+
+(function () {
+  const g = window.GAME_DATA;
+  if (!g || g.__officeExpansionApplied) return;
+  g.__officeExpansionApplied = true;
+
+  const push = (pool, events) => {
+    if (!g.eventPools[pool]) g.eventPools[pool] = [];
+    g.eventPools[pool].push(...events);
+  };
+
+  const e = (id, type, title, desc, note, terms, formula, choices) => ({
+    id,
+    type,
+    title,
+    desc,
+    note,
+    terms,
+    formula,
+    choices,
+  });
+
+  const c = (label, detail, learn, effect) => ({
+    label,
+    detail,
+    learn,
+    effect,
+  });
+
+  push("early", [
+    e(
+      "early_fornecedor_boleto",
+      "mix",
+      "Fornecedor oferece desconto",
+      "Um fornecedor libera um abatimento bom se você pagar mais cedo e fechar um contrato maior.",
+      "No começo, desconto e prazo podem valer mais do que insistir no preço cheio.",
+      ["capital_de_giro", "fluxo_caixa", "custo_oportunidade"],
+      "Desconto agora pode reduzir gasto futuro, mas trava caixa por um tempo.",
+      [
+        c(
+          "Fechar o acordo",
+          "Ganha desconto e previsibilidade.",
+          "Negociar bem também é gestão de caixa.",
+          (g) => {
+            g.cash -= 3500;
+            g.expenseBase -= 1800;
+            g.supplierRep += 6;
+            return { type: "good", text: "Você reduziu custo fixo com uma negociação mais esperta." };
+          },
+        ),
+        c(
+          "Recusar e manter liquidez",
+          "Protege o caixa neste mês.",
+          "Nem todo desconto compensa a perda de fôlego.",
+          (g) => {
+            g.cash += 1200;
+            g.creditScore += 2;
+            return { type: "neutral", text: "Você preservou caixa, mas deixou uma economia passar." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "early_sistema_organizado",
+      "pos",
+      "Rotina interna fica mais clara",
+      "Sua equipe começa a padronizar processos simples de operação e cadastro.",
+      "Pequenas melhorias de organização costumam aparecer primeiro no custo, depois no lucro.",
+      ["processos", "eficiencia_operacional"],
+      "Processo melhor costuma reduzir desperdício sem exigir mais vendas.",
+      [
+        c(
+          "Formalizar a rotina",
+          "Cria padrão de trabalho.",
+          "Organização vira ganho recorrente.",
+          (g) => {
+            g.expenseBase -= 1200;
+            g.clientTrust += 3;
+            return { type: "good", text: "A operação ficou mais redonda e mais barata." };
+          },
+        ),
+        c(
+          "Deixar como está",
+          "Evita mudança imediata.",
+          "Nem toda melhoria precisa ser grande para existir.",
+          (g) => {
+            g.supplierRep += 1;
+            return { type: "neutral", text: "Você manteve a estrutura atual sem mexer em custos." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "early_pedido_extra",
+      "pos",
+      "Pedido extra inesperado",
+      "Uma venda fora da curva aparece e melhora o caixa do mês.",
+      "Entradas pequenas em fase inicial podem mudar bastante a confiança do negócio.",
+      ["liquidez", "demanda"],
+      "Receita extra ajuda quando o custo está controlado.",
+      [
+        c(
+          "Atender com prioridade",
+          "Monetiza o pedido rápido.",
+          "Caixa rápido reduz aperto.",
+          (g) => {
+            g.cash += 9500;
+            g.revenueBase += 1800;
+            g.clientTrust += 2;
+            return { type: "good", text: "O pedido entrou no caixa e deu fôlego extra." };
+          },
+        ),
+        c(
+          "Exigir pagamento antecipado",
+          "Reduz risco e melhora a previsibilidade.",
+          "Recebimento seguro vale muito no começo.",
+          (g) => {
+            g.cash += 7000;
+            g.creditScore += 3;
+            return { type: "good", text: "Você ganhou segurança de recebimento." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "early_marketing_sutil",
+      "mix",
+      "Ação local de marketing funciona",
+      "Uma campanha simples em bairros estratégicos traz retorno acima do esperado.",
+      "Gastos pequenos em marketing podem ser úteis quando a base ainda é leve.",
+      ["demanda", "custo_oportunidade"],
+      "Marketing certo aumenta a receita, mas precisa caber no caixa.",
+      [
+        c(
+          "Repetir a campanha",
+          "Amplia o alcance.",
+          "Escalar o que funcionou pode valer muito.",
+          (g) => {
+            g.revenueBase += 3200;
+            g.monthlyCosts.marketing += 900;
+            g.clientTrust += 4;
+            return { type: "good", text: "A campanha virou um canal mais forte de demanda." };
+          },
+        ),
+        c(
+          "Encerrar após o teste",
+          "Protege margem.",
+          "Gasto recorrente precisa ter retorno claro.",
+          (g) => {
+            g.cash += 1500;
+            g.macro.demand += 1;
+            return { type: "neutral", text: "Você aproveitou o teste sem transformar isso em custo fixo." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "early_ajuste_custos",
+      "neg",
+      "Contas pequenas começaram a somar",
+      "Vários gastos pequenos entraram ao mesmo tempo e apertaram a operação.",
+      "Muitos custos pequenos podem fazer mais estrago do que um gasto grande isolado.",
+      ["fluxo_caixa", "gasto_fixos"],
+      "Cortar vazamentos agora evita dor depois.",
+      [
+        c(
+          "Revisar contratos",
+          "Reduz sangria de caixa.",
+          "Gerenciar custo é mais seguro do que correr atrás do prejuízo.",
+          (g) => {
+            g.expenseBase -= 2200;
+            g.monthlyCosts.utilities -= 300;
+            g.supplierRep -= 1;
+            return { type: "good", text: "Você enxugou pequenas saídas que estavam consumindo a margem." };
+          },
+        ),
+        c(
+          "Deixar para o próximo mês",
+          "Adia o problema.",
+          "Ignorar custo costuma cobrar juros invisíveis.",
+          (g) => {
+            g.creditScore -= 3;
+            g.monthlyCosts.training += 200;
+            return { type: "bad", text: "Os custos continuam ali e o aperto ficou maior." };
+          },
+        ),
+      ],
+    ),
+  ]);
+
+  push("growth", [
+    e(
+      "growth_novo_endereco",
+      "major",
+      "Mudança para endereço melhor",
+      "Surge a chance de mudar para um escritório mais forte e com imagem melhor.",
+      "Quando a empresa cresce, a sede passa a influenciar percepção e patrimonialização.",
+      ["ativo", "patrimonio", "custo_oportunidade"],
+      "Imóvel melhor pode elevar patrimônio e fortalecer a marca, mas custa mais.",
+      [
+        c(
+          "Usar o momento para migrar",
+          "Melhora a presença da empresa.",
+          "Patrimônio e imagem podem crescer juntos.",
+          (g) => {
+            g.cash -= 12000;
+            g.revenueBase += 4200;
+            g.patrimonyBonus = (g.patrimonyBonus || 0) + 6000;
+            g.clientTrust += 6;
+            return { type: "good", text: "Você subiu o nível da empresa sem perder o ritmo comercial." };
+          },
+        ),
+        c(
+          "Ficar onde está",
+          "Preserva caixa.",
+          "Nem toda fase pede expansão de estrutura.",
+          (g) => {
+            g.cash += 3000;
+            g.expenseBase -= 900;
+            return { type: "neutral", text: "Você guardou caixa para outras prioridades." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "growth_crm",
+      "pos",
+      "Novo CRM melhora o follow-up",
+      "A empresa passa a registrar contatos e histórico de clientes com mais consistência.",
+      "Processos de relacionamento podem aumentar conversão sem elevar tanto o gasto.",
+      ["relacionamento", "processos"],
+      "Relacionamento melhor reduz perdas na venda.",
+      [
+        c(
+          "Adotar a ferramenta",
+          "Aumenta organização comercial.",
+          "Pequena tecnologia pode render por meses.",
+          (g) => {
+            g.revenueBase += 2500;
+            g.monthlyCosts.software += 650;
+            g.clientTrust += 5;
+            return { type: "good", text: "A equipe vendeu melhor e com mais controle." };
+          },
+        ),
+        c(
+          "Aguardar mais um trimestre",
+          "Evita custo novo.",
+          "Timing também é decisão.",
+          (g) => {
+            g.creditScore += 1;
+            return { type: "neutral", text: "Você segurou a decisão e manteve o orçamento estável." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "growth_negociacao_longa",
+      "mix",
+      "Cliente pede prazo maior",
+      "Um comprador quer alongar prazo de pagamento para fechar um lote maior.",
+      "Prazo pode aumentar volume, mas afeta o fôlego do caixa.",
+      ["inadimplencia", "capital_de_giro"],
+      "Volume e prazo caminham juntos quando o crédito precisa ser bem administrado.",
+      [
+        c(
+          "Aceitar com limite",
+          "Mantém chance de crescer.",
+          "Risco controlado vale mais do que volume cego.",
+          (g) => {
+            g.cash += 6000;
+            g.revenueBase += 3000;
+            g.creditScore += 2;
+            return { type: "good", text: "Você cresceu sem exagerar no risco comercial." };
+          },
+        ),
+        c(
+          "Recusar o prazo",
+          "Protege a liquidez.",
+          "Nem todo pedido vale o custo financeiro.",
+          (g) => {
+            g.clientTrust -= 1;
+            g.cash += 2000;
+            return { type: "neutral", text: "Você manteve o caixa mais protegido." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "growth_equipe_estreita",
+      "pos",
+      "Equipe melhora produtividade",
+      "As pessoas começam a entregar mais com a mesma estrutura.",
+      "Produtividade pode transformar estrutura fixa em receita adicional.",
+      ["eficiencia_operacional", "produtividade"],
+      "Produzir mais com o mesmo custo aumenta margem.",
+      [
+        c(
+          "Reforçar treinamentos",
+          "Consolida o ganho.",
+          "Capacitação costuma voltar em eficiência.",
+          (g) => {
+            g.expenseBase -= 1500;
+            g.monthlyCosts.training += 600;
+            g.supplierRep += 2;
+            return { type: "good", text: "A operação ficou mais eficiente e preparada." };
+          },
+        ),
+        c(
+          "Apenas registrar o avanço",
+          "Sem novos gastos.",
+          "Nem toda melhora precisa virar investimento imediato.",
+          (g) => {
+            g.revenueBase += 1500;
+            return { type: "good", text: "O ganho de produtividade entrou sem custo extra." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "growth_aluguel_operacional",
+      "neg",
+      "Aluguel operacional sobe",
+      "Cadeiras, internet, energia e serviços relacionados ao escritório ficaram mais caros.",
+      "Custos estruturais sobem silenciosamente se não houver revisão.",
+      ["gasto_fixos", "inflação"],
+      "Quando a inflação aperta, custos recorrentes aparecem primeiro.",
+      [
+        c(
+          "Trocar alguns contratos",
+          "Reduz parte do impacto.",
+          "Renegociar não é fraqueza, é proteção.",
+          (g) => {
+            g.monthlyCosts.utilities -= 500;
+            g.monthlyCosts.software -= 200;
+            g.expenseBase -= 1000;
+            return { type: "good", text: "Você amortecou a subida dos custos fixos." };
+          },
+        ),
+        c(
+          "Aceitar o aumento",
+          "Evita atrito agora.",
+          "Sem revisão, custo cresce sozinho.",
+          (g) => {
+            g.monthlyCosts.utilities += 600;
+            g.creditScore -= 2;
+            return { type: "bad", text: "Os custos subiram e a margem sentiu o impacto." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "growth_estoque_mais_rapido",
+      "mix",
+      "Estoque gira mais rápido",
+      "A operação compra e vende com mais agilidade do que antes.",
+      "Giro rápido melhora liquidez e ajuda a financiar crescimento.",
+      ["liquidez", "capital_de_giro"],
+      "Estoque que gira rápido libera caixa e reduz risco de parada.",
+      [
+        c(
+          "Aumentar reposição",
+          "Aproveita a velocidade.",
+          "Girar bem é melhor do que acumular.",
+          (g) => {
+            g.revenueBase += 3800;
+            g.cash -= 2500;
+            g.clientTrust += 3;
+            return { type: "good", text: "A velocidade de giro melhorou as vendas." };
+          },
+        ),
+        c(
+          "Manter o ritmo atual",
+          "Evita pressão extra.",
+          "Crescimento também precisa de controle.",
+          (g) => {
+            g.cash += 1800;
+            g.expenseBase -= 700;
+            return { type: "neutral", text: "Você preservou folga financeira para o próximo passo." };
+          },
+        ),
+      ],
+    ),
+  ]);
+
+  push("pressure", [
+    e(
+      "pressure_impostos",
+      "major",
+      "Pressão tributária aumenta",
+      "Uma mudança fiscal eleva os custos de operação e reduz margem no curto prazo.",
+      "Em fase de pressão, imposto e estrutura apertam ao mesmo tempo.",
+      ["tributos", "margem", "custo_fixo"],
+      "Mais imposto significa menos caixa livre se o preço não subir junto.",
+      [
+        c(
+          "Repassar parte ao preço",
+          "Defende margem.",
+          "Preço e tributo precisam conversar.",
+          (g) => {
+            g.revenueBase += 2200;
+            g.expenseBase += 1200;
+            g.clientTrust -= 1;
+            return { type: "good", text: "Você protegeu parte da margem sem perder o cliente totalmente." };
+          },
+        ),
+        c(
+          "Segurar preço para não perder demanda",
+          "Mantém competitividade.",
+          "Nem sempre a resposta é repassar tudo.",
+          (g) => {
+            g.clientTrust += 2;
+            g.cash -= 3500;
+            return { type: "neutral", text: "Você sustentou demanda, mas absorveu mais custo." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "pressure_frete",
+      "neg",
+      "Frete ficou mais caro",
+      "A logística ficou mais pesada e o custo de entrega subiu de forma sensível.",
+      "Logística ruim corrói margem mesmo quando o comercial vai bem.",
+      ["logistica", "gasto_fixos"],
+      "Frete é custo que aparece rápido no resultado.",
+      [
+        c(
+          "Otimizar rotas",
+          "Reduz parte do impacto.",
+          "Eficiência logística sempre ajuda.",
+          (g) => {
+            g.monthlyCosts.logistics -= 900;
+            g.expenseBase -= 1200;
+            return { type: "good", text: "Você redesenhou a logística e reduziu o estrago." };
+          },
+        ),
+        c(
+          "Absorver por enquanto",
+          "Evita mudanças internas.",
+          "Adiar ajuste custa caro.",
+          (g) => {
+            g.cash -= 2500;
+            g.creditScore -= 2;
+            return { type: "bad", text: "O aumento de frete bateu direto na operação." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "pressure_reuniao_locacao",
+      "mix",
+      "Imóvel alugado pede revisão",
+      "O proprietário do imóvel quer rever o contrato antes do prazo padrão.",
+      "Aluguel em alta costuma pressionar caixa, mas também pode ser trocado por um espaço melhor ou mais barato.",
+      ["patrimonio", "aluguel", "inflação"],
+      "Ao lidar com aluguel, é preciso olhar o valor do imóvel e o custo recorrente ao mesmo tempo.",
+      [
+        c(
+          "Negociar permanência",
+          "Ganha estabilidade.",
+          "Estabilidade de contrato vale muito em cenário instável.",
+          (g) => {
+            g.cash -= 1800;
+            g.clientTrust += 2;
+            return { type: "neutral", text: "Você manteve o espaço sem perder tanta previsibilidade." };
+          },
+        ),
+        c(
+          "Procurar espaço melhor",
+          "Pode reduzir custo depois.",
+          "Mudar sede às vezes melhora o jogo todo.",
+          (g) => {
+            g.expenseBase -= 900;
+            g.patrimonyBonus = (g.patrimonyBonus || 0) + 1800;
+            return { type: "good", text: "Você começou a reposicionar a empresa para um espaço mais inteligente." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "pressure_estoque_parado",
+      "neg",
+      "Estoque começou a ficar parado",
+      "O capital está preso em produtos que não giram mais na velocidade desejada.",
+      "Quando o estoque para, a empresa sente falta de caixa antes de sentir falta de lucro.",
+      ["liquidez", "custo_oportunidade"],
+      "Estoque parado reduz retorno do capital.",
+      [
+        c(
+          "Liquidação parcial",
+          "Converte parte do estoque em caixa.",
+          "Caixa vivo vale mais do que estoque morto.",
+          (g) => {
+            g.cash += 7000;
+            g.revenueBase -= 1200;
+            g.expenseBase -= 700;
+            return { type: "good", text: "Você destravou parte do capital parado." };
+          },
+        ),
+        c(
+          "Segurar preço",
+          "Tenta preservar margem.",
+          "Preço alto demais pode impedir giro.",
+          (g) => {
+            g.clientTrust -= 2;
+            g.macro.demand -= 2;
+            return { type: "bad", text: "O estoque continuou parado por mais tempo." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "pressure_credito_caro",
+      "mix",
+      "Crédito bancário encarece",
+      "As linhas de crédito chegam com taxas piores e exigências mais duras.",
+      "Em aperto financeiro, o custo do dinheiro importa tanto quanto a receita.",
+      ["selic", "spread_bancario"],
+      "Juro alto pune empresas que dependem demais de capital de terceiros.",
+      [
+        c(
+          "Reduzir dependência do banco",
+          "Protege o caixa futuro.",
+          "Menos dívida costuma significar menos pressão.",
+          (g) => {
+            g.debt = Math.max(0, g.debt - 6000);
+            g.creditScore += 4;
+            return { type: "good", text: "Você cortou parte da exposição ao crédito caro." };
+          },
+        ),
+        c(
+          "Seguir usando crédito",
+          "Compra tempo.",
+          "Nem todo empréstimo é ruim, mas ele cobra preço.",
+          (g) => {
+            g.debt += 8500;
+            g.cash += 3000;
+            return { type: "neutral", text: "Você comprou fôlego, mas ficou mais exposto a juros." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "pressure_time_interno",
+      "pos",
+      "Time responde sob pressão",
+      "A equipe começa a entregar mais rápido para segurar o resultado.",
+      "Pressão pode gerar eficiência, desde que não queime a operação.",
+      ["produtividade", "eficiencia_operacional"],
+      "Sob pressão, eficiência pode subir por um tempo.",
+      [
+        c(
+          "Reconhecer o esforço",
+          "Melhora confiança interna.",
+          "Equipe engajada entrega mais.",
+          (g) => {
+            g.clientTrust += 2;
+            g.supplierRep += 2;
+            g.expenseBase -= 900;
+            return { type: "good", text: "A operação ficou mais enxuta e coordenada." };
+          },
+        ),
+        c(
+          "Apertar ainda mais",
+          "Força performance no curto prazo.",
+          "Pressão excessiva pode custar caro depois.",
+          (g) => {
+            g.revenueBase += 1800;
+            g.monthlyCosts.training -= 300;
+            return { type: "neutral", text: "Você ganhou velocidade, mas a operação ficou mais tensa." };
+          },
+        ),
+      ],
+    ),
+  ]);
+
+  push("shock", [
+    e(
+      "shock_crise_imobiliaria",
+      "major",
+      "Crise no mercado imobiliário",
+      "Os valores de imóveis e aluguéis ficam mais instáveis por alguns meses.",
+      "Quando o mercado imobiliário oscila, patrimônio e custo mensal podem andar em direções opostas.",
+      ["patrimonio", "aluguel", "ativo"],
+      "Patrimônio imobiliário pode subir ou cair, mas o custo do aluguel ainda pesa todo mês.",
+      [
+        c(
+          "Segurar imóveis bons",
+          "Protege patrimônio de longo prazo.",
+          "Ativos fortes ajudam em crise.",
+          (g) => {
+            g.patrimonyBonus = (g.patrimonyBonus || 0) + 9000;
+            g.clientTrust += 2;
+            return { type: "good", text: "Você protegeu a base patrimonial." };
+          },
+        ),
+        c(
+          "Trocar por espaço mais barato",
+          "Corta custo imediato.",
+          "Liquidez pode ser melhor que status.",
+          (g) => {
+            g.expenseBase -= 2500;
+            g.cash += 5000;
+            return { type: "good", text: "Você aliviou o caixa com uma troca mais pragmática." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "shock_falha_sistema",
+      "neg",
+      "Falha de sistema interno",
+      "Um erro operacional derruba parte do fluxo de pedidos e gera retrabalho.",
+      "Problema técnico costuma aparecer como custo, não como evento isolado.",
+      ["processos", "custos_variaveis"],
+      "Falha operacional vira gasto extra e perda de receita.",
+      [
+        c(
+          "Contratar suporte imediato",
+          "Recupera o processo mais rápido.",
+          "Parar pouco pode custar menos do que continuar errado.",
+          (g) => {
+            g.cash -= 5000;
+            g.expenseBase -= 800;
+            g.clientTrust += 1;
+            return { type: "good", text: "Você resolveu o problema antes que ele espalhasse mais dano." };
+          },
+        ),
+        c(
+          "Corrigir internamente",
+          "Evita gastos novos.",
+          "Capacidade interna resolve muita coisa.",
+          (g) => {
+            g.revenueBase -= 1800;
+            g.supplierRep += 1;
+            return { type: "neutral", text: "A operação caiu um pouco, mas sem custo externo grande." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "shock_demanda_desaba",
+      "neg",
+      "Demanda desaba na região",
+      "O mercado local desacelera e os pedidos ficam mais escassos por alguns meses.",
+      "Quando a demanda cai, o problema quase sempre aparece como ociosidade.",
+      ["demanda", "fluxo_caixa"],
+      "Menos demanda derruba receita se a estrutura ficar pesada demais.",
+      [
+        c(
+          "Reduzir estrutura rapidamente",
+          "Defende a margem.",
+          "Cortar cedo pode salvar a operação.",
+          (g) => {
+            g.expenseBase -= 3200;
+            g.monthlyCosts.marketing -= 700;
+            g.creditScore += 1;
+            return { type: "good", text: "Você enxugou a operação para sobreviver à queda." };
+          },
+        ),
+        c(
+          "Insistir em vender mais",
+          "Busca compensar no volume.",
+          "Às vezes a solução é melhorar o funil, não apenas empurrar volume.",
+          (g) => {
+            g.revenueBase += 1200;
+            g.cash -= 2800;
+            return { type: "neutral", text: "Você tentou reagir com vendas, mas o mercado não ajudou tanto." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "shock_renegociacao_aluguel",
+      "mix",
+      "Renegociação difícil de aluguel",
+      "O contrato do escritório entra em uma fase mais dura e o custo sobe bastante.",
+      "Se o imóvel está caro demais, vale revisar o contrato ou até trocar de ponto.",
+      ["aluguel", "gasto_fixos", "patrimonio"],
+      "Reajustes fortes costumam afetar caixa antes de afetar imagem.",
+      [
+        c(
+          "Negociar novo contrato",
+          "Reduz o aumento.",
+          "Renegociar é melhor do que sangrar todo mês.",
+          (g) => {
+            g.monthlyCosts.utilities -= 400;
+            g.cash -= 2200;
+            g.patrimonyBonus = (g.patrimonyBonus || 0) + 1200;
+            return { type: "good", text: "Você segurou parte do aumento do aluguel." };
+          },
+        ),
+        c(
+          "Procurar uma saída",
+          "Abre espaço para mudança.",
+          "Sair de um contrato ruim às vezes é o melhor negócio.",
+          (g) => {
+            g.expenseBase -= 1000;
+            g.cash += 1800;
+            return { type: "neutral", text: "Você começou a escapar do custo mais pesado." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "shock_estoque_obsoleto",
+      "neg",
+      "Estoque ficou obsoleto",
+      "Parte do estoque perdeu valor e precisa ser desovada com desconto.",
+      "Obsolescência mexe com caixa, margem e confiança do mercado.",
+      ["liquidez", "estoque", "custo_oportunidade"],
+      "Quando o estoque envelhece, o preço ideal passa a ser um preço rápido.",
+      [
+        c(
+          "Queimar com desconto",
+          "Recupera caixa agora.",
+          "Caixa de hoje pode valer mais do que margem amanhã.",
+          (g) => {
+            g.cash += 11000;
+            g.revenueBase -= 2200;
+            g.clientTrust += 1;
+            return { type: "good", text: "Você recuperou dinheiro preso no estoque obsoleto." };
+          },
+        ),
+        c(
+          "Tentar vender pelo preço cheio",
+          "Defende margem.",
+          "Nem sempre o mercado aceita esperar.",
+          (g) => {
+            g.macro.demand -= 3;
+            g.creditScore -= 2;
+            return { type: "bad", text: "A demora aumentou a perda de valor." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "shock_financiamento_pesa",
+      "mix",
+      "Financiamento pesa no caixa",
+      "Obrigações parceladas começaram a pesar mais do que o esperado.",
+      "Quando a dívida encurta o fôlego, patrimônio sem caixa vira armadilha.",
+      ["patrimonio", "fluxo_caixa", "capital_de_giro"],
+      "Patrimônio cresce, mas a liquidez precisa acompanhar.",
+      [
+        c(
+          "Pagar antecipado um pedaço",
+          "Reduz o peso futuro.",
+          "Menos parcela significa mais liberdade.",
+          (g) => {
+            g.debt = Math.max(0, g.debt - 7000);
+            g.cash -= 2500;
+            g.creditScore += 3;
+            return { type: "good", text: "Você tirou um pouco do peso financeiro do caminho." };
+          },
+        ),
+        c(
+          "Manter o plano",
+          "Preserva caixa imediato.",
+          "Postergar nem sempre é ruim, mas o custo continua ali.",
+          (g) => {
+            g.cash += 1800;
+            g.creditScore -= 1;
+            return { type: "neutral", text: "Você segurou caixa agora, mas manteve a pressão da dívida." };
+          },
+        ),
+      ],
+    ),
+  ]);
+
+  push("recovery", [
+    e(
+      "recovery_reposicao",
+      "pos",
+      "Reposição da demanda",
+      "O mercado começa a reagir e os pedidos voltam a crescer.",
+      "Recuperação costuma recompensar quem sobreviveu à fase de pressão.",
+      ["demanda", "recuperacao"],
+      "Quando a demanda volta, as estruturas enxutas colhem mais rápido.",
+      [
+        c(
+          "Retomar marketing",
+          "Acelera a retomada.",
+          "Recuperação exige visibilidade.",
+          (g) => {
+            g.revenueBase += 3600;
+            g.monthlyCosts.marketing += 500;
+            g.clientTrust += 3;
+            return { type: "good", text: "Você voltou a ganhar tração comercial." };
+          },
+        ),
+        c(
+          "Subir preço com calma",
+          "Protege margem.",
+          "Recuperação também é hora de corrigir preço.",
+          (g) => {
+            g.revenueBase += 2200;
+            g.cash += 2500;
+            return { type: "good", text: "Você melhorou a margem sem espantar o mercado." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "recovery_imovel_valorizado",
+      "major",
+      "Imóvel valoriza novamente",
+      "A sede principal volta a ganhar valor e reforça o patrimônio da companhia.",
+      "Ativos bem escolhidos ajudam a atravessar ciclos inteiros.",
+      ["patrimonio", "ativo"],
+      "Valorização imobiliária melhora o balanço e o score final.",
+      [
+        c(
+          "Reconhecer o ganho",
+          "Aumenta o patrimônio.",
+          "Ativo valorizado conta no resultado final.",
+          (g) => {
+            g.patrimonyBonus = (g.patrimonyBonus || 0) + 14000;
+            g.creditScore += 6;
+            return { type: "good", text: "Seu patrimônio ganhou força de novo." };
+          },
+        ),
+        c(
+          "Usar como garantia",
+          "Abre crédito.",
+          "Ativo forte pode apoiar crescimento.",
+          (g) => {
+            g.cash += 6000;
+            g.debt += 3000;
+            return { type: "neutral", text: "Você converteu parte da valorização em flexibilidade financeira." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "recovery_ganho_operacional",
+      "pos",
+      "Operação mais afinada",
+      "A empresa passa a produzir e vender com menos desperdício.",
+      "Depois da pressão, eficiência costuma ficar permanente.",
+      ["eficiencia_operacional", "margem"],
+      "Eficiência reforça margem mesmo sem crescer demais.",
+      [
+        c(
+          "Consolidar processos",
+          "Torna o ganho recorrente.",
+          "Melhoria que vira rotina vale mais.",
+          (g) => {
+            g.expenseBase -= 1600;
+            g.clientTrust += 2;
+            return { type: "good", text: "A empresa ficou mais leve e mais lucrativa." };
+          },
+        ),
+        c(
+          "Manter sem mexer",
+          "Evita novos custos.",
+          "Nem todo ganho precisa virar projeto.",
+          (g) => {
+            g.cash += 1200;
+            return { type: "neutral", text: "Você colheu o ganho sem expandir a estrutura." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "recovery_time_renovacao",
+      "mix",
+      "Momento de renovar o escritório",
+      "Agora existe espaço para trocar um imóvel ruim por algo mais estratégico.",
+      "Na recuperação, sede e imagem podem virar vantagem competitiva.",
+      ["patrimonio", "aluguel", "custo_oportunidade"],
+      "Melhor escritório pode pagar parte do custo com imagem e eficiência.",
+      [
+        c(
+          "Investir em espaço melhor",
+          "Aumenta conforto e valor.",
+          "Ativo bom ajuda no longo prazo.",
+          (g) => {
+            g.cash -= 9000;
+            g.patrimonyBonus = (g.patrimonyBonus || 0) + 7000;
+            g.revenueBase += 2000;
+            return { type: "good", text: "Você reforçou a sede e também a imagem do negócio." };
+          },
+        ),
+        c(
+          "Permanecer no atual",
+          "Guarda caixa para outro uso.",
+          "Fazer nada também é uma escolha financeira.",
+          (g) => {
+            g.cash += 2500;
+            g.monthlyCosts.utilities -= 200;
+            return { type: "neutral", text: "Você preservou liquidez para oportunidades melhores." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "recovery_reserva",
+      "pos",
+      "Reserva começa a fazer diferença",
+      "A empresa percebe que a reserva acumulada lá atrás evita apertos agora.",
+      "Liquidez suficiente dá liberdade para decidir melhor na retomada.",
+      ["reserva_emergencia", "liquidez"],
+      "Reserva forte melhora o score de sobrevivência.",
+      [
+        c(
+          "Reforçar reserva",
+          "Aumenta segurança.",
+          "Reserva protege o próximo ciclo.",
+          (g) => {
+            g.cash -= 5000;
+            g.creditScore += 5;
+            g.patrimonyBonus = (g.patrimonyBonus || 0) + 2500;
+            return { type: "good", text: "Você transformou folga em proteção real." };
+          },
+        ),
+        c(
+          "Usar no crescimento",
+          "Acelera a retomada.",
+          "Caixa existe para ser usado com consciência.",
+          (g) => {
+            g.revenueBase += 2700;
+            g.cash += 2000;
+            return { type: "good", text: "Você colocou a reserva para trabalhar no crescimento." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "recovery_cliente_fiel",
+      "pos",
+      "Cliente antigo volta a comprar",
+      "Um cliente recorrente retorna com volume maior do que o esperado.",
+      "Base fiel costuma ser mais valiosa que uma venda pontual.",
+      ["relacionamento", "demanda"],
+      "Cliente fiel aumenta previsibilidade de receita.",
+      [
+        c(
+          "Amarrar contrato",
+          "Ganha previsibilidade.",
+          "Previsibilidade é uma forma de valor.",
+          (g) => {
+            g.cash += 8500;
+            g.clientTrust += 5;
+            g.revenueBase += 1500;
+            return { type: "good", text: "A relação comercial ficou mais forte." };
+          },
+        ),
+        c(
+          "Manter como pedido avulso",
+          "Evita concessões.",
+          "Nem todo cliente precisa virar contrato.",
+          (g) => {
+            g.cash += 5000;
+            g.creditScore += 1;
+            return { type: "neutral", text: "Você valorizou o volume sem abrir mão de flexibilidade." };
+          },
+        ),
+      ],
+    ),
+  ]);
+
+  push("major", [
+    e(
+      "major_juros_controlo",
+      "major",
+      "Juros começam a aliviar",
+      "Depois de um período pesado, a taxa básica dá sinais de alívio.",
+      "Juro menor ajuda dívida, investimento e compra de imóveis.",
+      ["selic", "credito", "capital_de_giro"],
+      "Quando o juro cai, o custo do erro também diminui.",
+      [
+        c(
+          "Reprecificar dívida",
+          "Reduz a pressão financeira.",
+          "Juro menor melhora fôlego.",
+          (g) => {
+            g.debtRate = Math.max(0.03, g.debtRate - 0.008);
+            g.creditScore += 4;
+            return { type: "good", text: "Você aproveitou o alívio para baixar o custo financeiro." };
+          },
+        ),
+        c(
+          "Acelerar expansão",
+          "Aproveita a janela.",
+          "Custo de capital menor pode justificar crescer.",
+          (g) => {
+            g.revenueBase += 5000;
+            g.cash -= 4000;
+            g.patrimonyBonus = (g.patrimonyBonus || 0) + 2000;
+            return { type: "good", text: "Você usou a janela para crescer de forma mais agressiva." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "major_regra_contratual",
+      "major",
+      "Nova regra de contrato comercial",
+      "O mercado passa a exigir mais clareza nos contratos e mais controle de risco.",
+      "Quando a regra muda, empresa organizada sofre menos.",
+      ["contratos", "risco", "score_credito"],
+      "Mais controle comercial reduz perdas escondidas.",
+      [
+        c(
+          "Ajustar processos e cláusulas",
+          "Fortalece governança.",
+          "Boa governança melhora reputação.",
+          (g) => {
+            g.clientTrust += 4;
+            g.supplierRep += 4;
+            g.expenseBase -= 800;
+            return { type: "good", text: "Sua operação ficou mais profissional." };
+          },
+        ),
+        c(
+          "Seguir como está",
+          "Evita retrabalho.",
+          "Às vezes o custo de adaptação aparece depois.",
+          (g) => {
+            g.creditScore -= 5;
+            g.cash += 1200;
+            return { type: "neutral", text: "Você evitou mudança imediata, mas assumiu um pouco mais de risco." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "major_valor_marca",
+      "pos",
+      "Marca da empresa ganha valor",
+      "A imagem da companhia melhora no mercado e passa a valer mais para parceiros.",
+      "Marca forte também é patrimônio, mesmo quando não aparece no caixa.",
+      ["patrimonio", "marca", "ativo"],
+      "Marca boa aumenta valor percebido do negócio.",
+      [
+        c(
+          "Investir em reputação",
+          "Aumenta valor de longo prazo.",
+          "Imagem sólida também é ativo.",
+          (g) => {
+            g.patrimonyBonus = (g.patrimonyBonus || 0) + 8000;
+            g.clientTrust += 6;
+            g.revenueBase += 2200;
+            return { type: "good", text: "Sua marca passou a valer mais dentro do jogo." };
+          },
+        ),
+        c(
+          "Monetizar a visibilidade",
+          "Traz caixa imediato.",
+          "Valor de marca pode virar receita.",
+          (g) => {
+            g.cash += 7000;
+            g.monthlyCosts.marketing += 400;
+            return { type: "good", text: "Você converteu reputação em caixa." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "major_estrutura_financeira",
+      "major",
+      "Reestruturação financeira",
+      "Chegou a hora de reorganizar ativos, dívidas e custos para o próximo ciclo.",
+      "Reestruturação é onde patrimônio e liquidez finalmente se encontram.",
+      ["patrimonio", "liquidez", "fluxo_caixa"],
+      "Uma estrutura financeira melhor faz o score subir de forma consistente.",
+      [
+        c(
+          "Reduzir passivos",
+          "Diminui a pressão.",
+          "Menos passivo deixa o patrimônio mais sólido.",
+          (g) => {
+            g.debt = Math.max(0, g.debt - 12000);
+            g.debtRate = Math.max(0.028, g.debtRate - 0.006);
+            g.creditScore += 8;
+            return { type: "good", text: "Sua estrutura financeira ficou mais leve." };
+          },
+        ),
+        c(
+          "Aumentar caixa de segurança",
+          "Traz folga operacional.",
+          "Liquidez pode valer mais do que expansão apressada.",
+          (g) => {
+            g.cash += 14000;
+            g.patrimonyBonus = (g.patrimonyBonus || 0) + 3000;
+            return { type: "good", text: "Você reforçou o colchão financeiro da empresa." };
+          },
+        ),
+      ],
+    ),
+    e(
+      "major_oportunidade_imovel",
+      "major",
+      "Excelente oportunidade imobiliária",
+      "Um imóvel alinhado ao seu porte aparece por um valor abaixo do mercado.",
+      "Comprar bem um imóvel melhora patrimônio e pode reduzir custo no longo prazo.",
+      ["patrimonio", "aluguel", "ativo"],
+      "A melhor compra é a que resolve caixa, imagem e patrimônio de uma vez.",
+      [
+        c(
+          "Comprar o imóvel",
+          "Aumenta patrimônio já.",
+          "Ativo certo pode valer muito no score final.",
+          (g) => {
+            g.cash -= 22000;
+            g.patrimonyBonus = (g.patrimonyBonus || 0) + 18000;
+            g.revenueBase += 2500;
+            return { type: "good", text: "Você fez uma aquisição imobiliária forte." };
+          },
+        ),
+        c(
+          "Desistir e ficar líquido",
+          "Mantém flexibilidade.",
+          "Nem toda oportunidade cabe no caixa do momento.",
+          (g) => {
+            g.cash += 3000;
+            g.creditScore += 2;
+            return { type: "neutral", text: "Você guardou caixa para uma chance ainda melhor." };
+          },
+        ),
+      ],
+    ),
+  ]);
+})();
