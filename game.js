@@ -290,7 +290,7 @@ function buyOffice(id, mode = "cash") {
     office.financingMonthlyPayment = 0;
     addLog(`Escritório ${office.name} comprado à vista por ${fmt(price)}.`, "good");
   } else {
-    const downPayment = Math.round(price * 0.2);
+    const downPayment = Math.round(price * 0.25);
     if (state.cash < downPayment) {
       addLog(`Caixa insuficiente para a entrada de ${office.name}.`, "bad");
       return;
@@ -345,7 +345,7 @@ function sellOffice(id) {
     addLog("Você precisa manter pelo menos um escritório em operação.", "bad");
     return;
   }
-  const saleValue = Math.round(officeValue(office) * 0.9);
+  const saleValue = Math.round(officeValue(office) * 0.88);
   state.cash += saleValue;
   office.status = "available";
   office.acquiredBy = null;
@@ -391,7 +391,7 @@ const state = {
   debtRate: 0.043,
   debtTerms: 12,
   creditScore: 560,
-  revenueBase: 76000,
+  revenueBase: 85000,
   expenseBase: 72000,
   supplierRep: 62,
   clientTrust: 68,
@@ -597,21 +597,31 @@ function openMacroMenu() {
 
 function profitStats() {
   const profitArr = state.profitHistory.slice(1);
-  const totalProfit = state.cumulativeProfit;
+  const totalProfit = state.cumulativeProfit || 0;
   const avgProfit = profitArr.length ? totalProfit / profitArr.length : 0;
-  const best = profitArr.length ? Math.max(...profitArr) : 0;
-  const worst = profitArr.length ? Math.min(...profitArr) : 0;
-  const margin = state.cumulativeRevenue > 0 ? (totalProfit / state.cumulativeRevenue) * 100 : 0;
-  const netMargin = state.cumulativeRevenue > 0 ? ((state.cumulativeRevenue - state.cumulativeExpenses) / state.cumulativeRevenue) * 100 : 0;
-  return { totalProfit, avgProfit, best, worst, margin, netMargin };
+  const best = profitArr.length ? Math.max(...profitArr.filter(p => isFinite(p))) : 0;
+  const worst = profitArr.length ? Math.min(...profitArr.filter(p => isFinite(p))) : 0;
+  const revenue = state.cumulativeRevenue || 0;
+  const margin = revenue > 0 ? (totalProfit / revenue) * 100 : 0;
+  const netMargin = revenue > 0 ? ((revenue - (state.cumulativeExpenses || 0)) / revenue) * 100 : 0;
+  return { 
+    totalProfit: isFinite(totalProfit) ? totalProfit : 0,
+    avgProfit: isFinite(avgProfit) ? avgProfit : 0,
+    best: isFinite(best) ? best : 0,
+    worst: isFinite(worst) ? worst : 0,
+    margin: isFinite(margin) ? margin : 0,
+    netMargin: isFinite(netMargin) ? netMargin : 0
+  };
 }
 
 function renderMiniBars(nodeId, values) {
   const node = el(nodeId);
   if (!node) return;
-  const maxAbs = Math.max(1, ...values.map((v) => Math.abs(v)));
+  const finiteValues = values.filter(v => isFinite(v));
+  const maxAbs = Math.max(1, ...finiteValues.map((v) => Math.abs(v)));
   node.innerHTML = values
     .map((v) => {
+      if (!isFinite(v)) v = 0;
       const height = Math.max(8, Math.round((Math.abs(v) / maxAbs) * 72));
       const cls = v < 0 ? "bar-item negative" : "bar-item";
       return `<div class="${cls}" style="height:${height}px"></div>`;
@@ -982,20 +992,20 @@ function monthlyTick() {
   const rng = seededRand(state.seed + state.month * 97 + 13);
   const macro = state.macro;
 
-  macro.selic = clamp(macro.selic + (rng() - 0.5) * 0.9 + (macro.risk > 55 ? 0.18 : -0.03), 6, 19);
-  macro.inflation = clamp(macro.inflation + (rng() - 0.5) * 0.5 + (macro.fx > 6 ? 0.12 : 0), 2, 14);
-  macro.fx = clamp(macro.fx + (rng() - 0.5) * 0.26 + (macro.risk > 60 ? 0.12 : 0), 4.2, 7.8);
-  macro.demand = clamp(macro.demand + (rng() - 0.5) * 5 + (state.clientTrust - 60) / 30 - (macro.risk - 25) / 90, 20, 120);
+  macro.selic = clamp(macro.selic + (rng() - 0.5) * 1.4 + (macro.risk > 55 ? 0.32 : -0.06), 6, 22);
+  macro.inflation = clamp(macro.inflation + (rng() - 0.5) * 0.75 + (state.debt > 100000 ? 0.09 : 0), 2, 15);
+  macro.fx = clamp(macro.fx + (rng() - 0.5) * 0.32 + (macro.risk > 60 ? 0.11 : 0), 4.2, 8.2);
+  macro.demand = clamp(macro.demand + (rng() - 0.5) * 5 + (state.clientTrust - 60) / 30 - (macro.risk - 25) / 90, 15, 100);
   macro.risk = clamp(macro.risk + (rng() - 0.5) * 4 + (state.debt > 120000 ? 1.2 : 0) - (state.cash > 120000 ? 0.4 : 0), 0, 100);
   macro.taxPressure = clamp(macro.taxPressure + (rng() - 0.5) * 1.2 + (macro.inflation > 7 ? 0.2 : 0), 0, 100);
   macro.confidence = clamp(macro.confidence + (rng() - 0.5) * 3 + (macro.demand > 70 ? 0.5 : -0.3) - (macro.risk > 60 ? 0.8 : 0), 0, 100);
 
-  state.debtRate = clamp(0.022 + macro.selic * 0.0024 + (100 - state.creditScore) / 6000, 0.025, 0.12);
+  state.debtRate = clamp(0.028 + macro.selic * 0.0032 + (100 - state.creditScore) / 4800, 0.032, 0.17);
 
-  const revenueNoise = 0.9 + rng() * 0.22;
-  const expenseNoise = 0.92 + rng() * 0.2;
-  const demandFactor = 0.72 + macro.demand / 145 + state.clientTrust / 290 + macro.confidence / 360;
-  const expenseFactor = 0.84 + macro.inflation / 18 + macro.taxPressure / 260 + Math.max(0, macro.fx - 5) / 18 + (100 - state.supplierRep) / 300;
+  const revenueNoise = 0.92 + rng() * 0.18;
+  const expenseNoise = 0.94 + rng() * 0.22;
+  const demandFactor = 0.62 + macro.demand / 160 + state.clientTrust / 340 + macro.confidence / 400;
+  const expenseFactor = 0.88 + macro.inflation / 13 + macro.taxPressure / 220 + Math.max(0, macro.fx - 4.8) / 14 + (100 - state.supplierRep) / 260;
 
   const extraOperatingCosts = Object.values(state.monthlyCosts || {}).reduce((sum, value) => sum + value, 0);
   const officeCosts = totalOfficeCost();
@@ -1004,8 +1014,10 @@ function monthlyTick() {
   let profit = monthRevenue - monthExpense;
   let extraExpense = 0;
 
-  if (macro.risk > 65 && rng() < 0.35) {
-    extraExpense = Math.round(3000 + rng() * 9000);
+  if (macro.risk > 55 && rng() < 0.45) {
+    const base = 5000 + rng() * 8000;
+    const proportional = state.cash * 0.04;
+    extraExpense = Math.round(Math.min(base + proportional, 30000));
     profit -= extraExpense;
   }
 
@@ -1038,10 +1050,10 @@ function monthlyTick() {
 
     if (payment < due) {
       const shortfall = due - payment;
-      const penalty = Math.round(shortfall * 0.12);
+      const penalty = Math.round(shortfall * 0.14);
       state.debt += penalty;
       addLog(`Caixa insuficiente para pagar tudo. Multa e juros adicionam ${fmt(penalty)} à dívida.`, "bad");
-      state.creditScore = Math.max(0, state.creditScore - 28);
+      state.creditScore = Math.max(0, state.creditScore - 30);
       state.macro.risk = clamp(state.macro.risk + 4, 0, 100);
     }
 
@@ -1097,13 +1109,13 @@ function monthlyTick() {
 }
 
 function startGame() {
-  state.cash = 180000;
+  state.cash = 200000;
   state.debt = 15000;
   state.debtRate = 0.043;
   state.debtTerms = 12;
   state.creditScore = 560;
-  state.revenueBase = 76000;
-  state.expenseBase = 72000;
+  state.revenueBase = 85000;
+  state.expenseBase = 30000;
   state.supplierRep = 62;
   state.clientTrust = 68;
   state.invested = 0;
@@ -1111,7 +1123,7 @@ function startGame() {
   state.month = 0;
   state.gameOver = false;
   state.recentLogs = [];
-  state.cashHistory = [180000];
+  state.cashHistory = [200000];
   state.profitHistory = [0];
   state.revenueHistory = [0];
   state.expenseHistory = [0];
@@ -1351,6 +1363,8 @@ function endGame() {
     summary = "Os choques e a dívida venceram a disputa. Vale recomeçar com mais proteção de caixa e menos alavancagem.";
     badge = "red";
   }
+
+  console.log(`Pontuação final: ${score} pontos. Categoria: ${title}.`);
 
   const endTitle = el("end-title");
   const endCash = el("end-cash");

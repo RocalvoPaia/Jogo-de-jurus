@@ -13,11 +13,11 @@
   };
 
   const STAFF_BASE = {
-    count: 4,
-    salary: 2500,
-    morale: 72,
-    training: 1,
-    monotony: 10,
+    count: 3,
+    salary: 2400,
+    morale: 55,
+    training: 0,
+    monotony: 18,
     tempPowerBoost: 0,
     workPower: 1,
     payroll: 0,
@@ -36,6 +36,8 @@
           state.staff.morale = Math.max(0, state.staff.morale - 10);
           state.staff.monotony = Math.max(0, state.staff.monotony - 6);
           state.creditScore = Math.max(0, state.creditScore - 10);
+          state.supplierRep = Math.max(0, state.supplierRep - 8);
+          state.macro.risk = clamp(state.macro.risk + 6, 0, 100);
           return `Perda de ${lost} funcionário(s) e queda de moral.`;
         },
       },
@@ -45,9 +47,9 @@
         note: "Quando a equipe entra em colapso, o custo jurídico aparece.",
         type: "bad",
         effect(state) {
-          const fine = 4500 + Math.round(Math.random() * 4000);
+          const fine = Math.max(6000, Math.round(state.cash * 0.055));
           state.cash = Math.max(0, state.cash - fine);
-          state.debt = Math.max(0, state.debt + Math.round(fine * 0.25));
+          state.debt = Math.max(0, state.debt + Math.round(fine * 0.30));
           state.staff.morale = Math.max(0, state.staff.morale - 8);
           return `Multa e despesas extras de ${fmt(fine)}.`;
         },
@@ -486,7 +488,7 @@
       addLog("Não há espaço livre para contratar mais funcionários.", "bad");
       return;
     }
-    const onboarding = qty * 1200;
+    const onboarding = qty * 2000;
     if (state.cash < onboarding) {
       addLog(`Caixa insuficiente para contratar ${qty} funcionário(s).`, "bad");
       return;
@@ -525,7 +527,7 @@
 
   function trainTeam() {
     const staff = state.staff || { ...STAFF_BASE };
-    const cost = 4500;
+    const cost = 5500;
     if (state.cash < cost) {
       addLog("Caixa insuficiente para treinar a equipe.", "bad");
       return;
@@ -772,15 +774,15 @@
     const macro = state.macro;
     const staff = state.staff || { ...STAFF_BASE };
 
-    macro.selic = clamp(macro.selic + (rng() - 0.5) * 1.05 + (macro.risk > 55 ? 0.24 : -0.04), 6, 20);
+    macro.selic = clamp(macro.selic + (rng() - 0.5) * 1.4 + (macro.risk > 55 ? 0.32 : -0.06), 6, 22);
     macro.inflation = clamp(macro.inflation + (rng() - 0.5) * 0.75 + (state.debt > 100000 ? 0.09 : 0), 2, 15);
     macro.fx = clamp(macro.fx + (rng() - 0.5) * 0.32 + (macro.risk > 60 ? 0.11 : 0), 4.2, 8.2);
-    macro.demand = clamp(macro.demand + (rng() - 0.5) * 4.6 + (state.clientTrust - 55) / 36 - (macro.risk - 25) / 96, 18, 120);
+    macro.demand = clamp(macro.demand + (rng() - 0.5) * 4.6 + (state.clientTrust - 55) / 36 - (macro.risk - 25) / 96, 15, 100);
     macro.risk = clamp(macro.risk + (rng() - 0.5) * 5 + (state.debt > 120000 ? 1.4 : 0) - (state.cash > 130000 ? 0.25 : 0), 0, 100);
     macro.taxPressure = clamp(macro.taxPressure + (rng() - 0.5) * 1.35 + (macro.inflation > 7 ? 0.22 : 0), 0, 100);
     macro.confidence = clamp(macro.confidence + (rng() - 0.5) * 3 + (macro.demand > 70 ? 0.5 : -0.3) - (macro.risk > 60 ? 0.8 : 0), 0, 100);
 
-    state.debtRate = clamp(0.027 + macro.selic * 0.0028 + (100 - state.creditScore) / 5600, 0.03, 0.14);
+    state.debtRate = clamp(0.028 + macro.selic * 0.0032 + (100 - state.creditScore) / 4800, 0.032, 0.17);
 
     const officeCost = totalOfficeCost() + totalFinancingCost();
     const fixedCost = Object.values(state.monthlyCosts || {}).reduce((sum, value) => sum + value, 0);
@@ -803,7 +805,7 @@
       0,
       100,
     );
-    staff.monotony = clamp((staff.monotony || 0) + 1.8 + Math.max(0, occupancy - 0.82) * 2.6 - (quality > 0.88 ? 0.9 : 0), 0, 100);
+    staff.monotony = clamp((staff.monotony || 0) + 2.2 + Math.max(0, occupancy - 0.82) * 2.8 - (quality > 0.88 ? 1.1 : 0), 0, 100);
 
     state.staff = staff;
     refreshStaffStats();
@@ -821,8 +823,8 @@
     const workPower = refreshStaffStats().workPower;
     const revenueNoise = 0.92 + rng() * 0.18;
     const expenseNoise = 0.94 + rng() * 0.22;
-    const demandFactor = 0.68 + macro.demand / 150 + state.clientTrust / 320 + macro.confidence / 380 + staff.morale / 640;
-    const expenseFactor = 0.9 + macro.inflation / 16 + macro.taxPressure / 255 + Math.max(0, macro.fx - 5) / 17 + (100 - state.supplierRep) / 320;
+    const demandFactor = 0.62 + macro.demand / 160 + state.clientTrust / 340 + macro.confidence / 400 + staff.morale / 700;
+    const expenseFactor = 0.88 + macro.inflation / 13 + macro.taxPressure / 220 + Math.max(0, macro.fx - 4.8) / 14 + (100 - state.supplierRep) / 260;
 
     const staffPayroll = staff.payroll;
     const monthRevenue = Math.round(state.revenueBase * demandFactor * revenueNoise * workPower);
@@ -830,8 +832,10 @@
     let profit = monthRevenue - monthExpense;
     let extraExpense = 0;
 
-    if (macro.risk > 65 && rng() < 0.4) {
-      extraExpense = Math.round(3500 + rng() * 9500);
+    if (macro.risk > 55 && rng() < 0.45) {
+      const base = 5000 + rng() * 8000;
+      const proportional = state.cash * 0.04;
+      extraExpense = Math.round(Math.min(base + proportional, 30000));
       profit -= extraExpense;
     }
 
@@ -909,7 +913,7 @@
     if (state.month % 12 === 0) {
       syncOfficeInflation();
       staff.salary = Math.round(staff.salary * (1 + (macro.inflation / 100) * 0.42));
-      staff.monotony = Math.max(0, staff.monotony - 6);
+      staff.monotony = Math.max(0, staff.monotony - 8);
       addLog(`Mês ${state.month}: salários e imóveis tiveram reajuste anual pela inflação.`, "info");
     }
 
@@ -931,12 +935,31 @@
   function calcScore() {
     const s = profitStats();
     const staff = refreshStaffStats();
-    const profitPart = clamp(Math.round((s.totalProfit / 70000) * 220), -120, 220);
-    const patrimonyPart = clamp(Math.round((state.patrimony / 450000) * 200), 0, 200);
-    const debtPart = clamp(Math.round(180 - (state.debt / 130000) * 180), 0, 180);
-    const staffPart = clamp(Math.round((staff.morale * 1.35) + (staff.workPower * 28)), 0, 180);
-    const controlPart = clamp(Math.round(((state.creditScore - 300) / 4) + ((state.cash > 0 ? 1 : 0) * 22)), 0, 220);
-    return clamp(Math.round(profitPart + patrimonyPart + debtPart + staffPart + controlPart), 0, 1000);
+
+    // Lucro acumulado (exige mais agora — base R$90k)
+    const profitPart = clamp(Math.round((s.totalProfit / 90000) * 200), -120, 200);
+
+    // Patrimônio (base mais alta — R$550k)
+    const patrimonyPart = clamp(Math.round((state.patrimony / 550000) * 200), 0, 200);
+
+    // Penalidade por dívida (mais agressiva)
+    const debtPart = clamp(Math.round(160 - (state.debt / 120000) * 160), 0, 160);
+
+    // Equipe — pesos reduzidos
+    const staffPart = clamp(Math.round((staff.morale * 1.1) + (staff.workPower * 22)), 0, 150);
+
+    // Controle financeiro
+    const controlPart = clamp(Math.round(((state.creditScore - 300) / 4.2) + ((state.cash > 0 ? 1 : 0) * 20)), 0, 180);
+
+    // NOVO: margem líquida acumulada
+    const marginPart = clamp(Math.round((s.netMargin / 20) * 110), 0, 110);
+
+    // NOVO: consistência (% de meses lucrativos)
+    const lucrativos = state.profitHistory.filter(p => p > 0).length;
+    const consistencyPart = clamp(Math.round((lucrativos / Math.max(1, state.month)) * 80), 0, 80);
+
+    const raw = profitPart + patrimonyPart + debtPart + staffPart + controlPart + marginPart + consistencyPart;
+    return clamp(raw, 0, 1000);
   }
 
   function endGame() {
@@ -948,15 +971,15 @@
     let summary = "";
     let badge = "blue";
 
-    if (score >= 720) {
+    if (score >= 750) {
       title = "CEO Financeiro";
       summary = "Você fechou a campanha com caixa, lucro e equipe funcionando de verdade.";
       badge = "green";
-    } else if (score >= 520) {
+    } else if (score >= 550) {
       title = "Gestor Resiliente";
       summary = "A empresa aguentou a pancada e conseguiu terminar com controle razoável.";
       badge = "blue";
-    } else if (score >= 320) {
+    } else if (score >= 350) {
       title = "Sobrevivente de Mercado";
       summary = "Você não afundou, mas a operação ficou apertada e a equipe sentiu o peso.";
       badge = "amber";
@@ -1047,21 +1070,21 @@
   }
 
   function startGame() {
-    state.cash = 170000;
-    state.debt = 52000;
-    state.debtRate = 0.046;
+    state.cash = 195000;
+    state.debt = 28000;
+    state.debtRate = 0.038;
     state.debtTerms = 12;
-    state.creditScore = 540;
-    state.revenueBase = 70000;
-    state.expenseBase = 76000;
-    state.supplierRep = 60;
-    state.clientTrust = 66;
+    state.creditScore = 580;
+    state.revenueBase = 78000;
+    state.expenseBase = 58000;
+    state.supplierRep = 65;
+    state.clientTrust = 62;
     state.invested = 0;
     state.investRate = 0;
     state.month = 0;
     state.gameOver = false;
     state.recentLogs = [];
-    state.cashHistory = [170000];
+    state.cashHistory = [195000];
     state.profitHistory = [0];
     state.revenueHistory = [0];
     state.expenseHistory = [0];
@@ -1080,12 +1103,11 @@
     state.themePhase = "";
     state.started = true;
     state.monthlyCosts = {
-      payroll: 5800,
-      marketing: 6200,
-      logistics: 7200,
-      software: 2100,
-      utilities: 3100,
-      training: 900,
+      marketing: 5200,
+      logistics: 6400,
+      software: 1800,
+      utilities: 2700,
+      training: 1200,
     };
     state.activeOfficeId = "starter";
     state.macro = {

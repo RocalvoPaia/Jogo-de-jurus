@@ -46,9 +46,10 @@ window.GAME_DATA = {
             detail: "Protege o ritmo, mas reduz a folga.",
             learn: "Reserva de emergência existe para momentos assim.",
             effect: g => {
-              g.cash += 8000;
+              g.cash += 5000;
               g.macro.risk -= 1;
-              g.creditScore += 4;
+              g.creditScore += 2;
+              g.debt += 3000;
               return { type: "good", text: "A reserva segurou o caixa e evitou estresse imediato." };
             },
           },
@@ -80,10 +81,11 @@ window.GAME_DATA = {
             detail: "Pode abrir porta para crescimento.",
             learn: "Estratégia comercial também tem custo de oportunidade.",
             effect: g => {
-              g.cash += 7000;
-              g.revenueBase += 6500;
-              g.clientTrust += 12;
-              g.macro.demand += 5;
+              g.cash += 4000;
+              g.revenueBase += 3500;
+              g.clientTrust += 10;
+              g.macro.demand += 3;
+              g.debt += 2500;
               return { type: "good", text: "O volume aumentou e a empresa ficou mais visível no mercado." };
             },
           },
@@ -168,9 +170,10 @@ window.GAME_DATA = {
             detail: "Amplia o alcance do ganho.",
             learn: "Testar e escalar é uma lógica útil em negócios.",
             effect: g => {
-              g.revenueBase += 4000;
-              g.clientTrust += 10;
-              g.cash -= 2000;
+              g.revenueBase += 2500;
+              g.clientTrust += 8;
+              g.cash -= 3500;
+              g.macro.risk += 2;
               return { type: "good", text: "A campanha virou uma máquina de aquisição melhor estruturada." };
             },
           },
