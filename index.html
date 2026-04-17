@@ -7,8 +7,10 @@
   <title>FinanceCEO — expansão completa</title>
   <link rel="stylesheet" href="styles.css" />
   <script defer src="terms.js"></script>
-  <script defer src="data.js"></script>
+  <script defer src="data/escritorio.js"></script>
+  <script defer src="data/eventos.js"></script>
   <script defer src="game.js"></script>
+  <script defer src="game_overrides.js"></script>
 </head>
 <body>
   <div class="app">
@@ -65,6 +67,13 @@
       </div>
 
       <div class="grid grid-4" style="margin-bottom:14px">
+        <div class="card pad stat-card"><div class="label">Funcionários</div><div class="value" id="staff-count">0 / 0</div></div>
+        <div class="card pad stat-card"><div class="label">Poder de trabalho</div><div class="value" id="staff-power">1.00x</div></div>
+        <div class="card pad stat-card"><div class="label">Humor da equipe</div><div class="value" id="staff-morale">0%</div></div>
+        <div class="card pad stat-card"><div class="label">Média salarial</div><div class="value" id="staff-salary">R$ 0</div></div>
+      </div>
+
+      <div class="grid grid-4" style="margin-bottom:14px">
         <div class="card pad stat-card"><div class="label">Receita base</div><div class="value" id="base-revenue">R$ 0</div></div>
         <div class="card pad stat-card"><div class="label">Lucro acumulado</div><div class="value" id="profit-total">R$ 0</div></div>
         <div class="card pad stat-card"><div class="label">Lucro médio / mês</div><div class="value" id="profit-avg">R$ 0</div></div>
@@ -101,13 +110,14 @@
       <div class="card pad" style="margin-bottom:14px">
         <div class="card-title"><h3>Menu rápido</h3></div>
         <div class="grid grid-3" style="gap:10px">
-          <button class="btn small icon-btn wobble-delay-1" onclick="openQuickMenu()"><img src="chart.svg" class="icon" alt="Resumo">Resumo</button>
-          <button class="btn small icon-btn wobble-delay-2" onclick="openMacroMenu()"><img src="shield.svg" class="icon" alt="Macro">Macro</button>
-          <button class="btn small icon-btn wobble-delay-3" onclick="openProfitMenu()"><img src="calendar.svg" class="icon" alt="Lucros">Lucros</button>
-          <button class="btn small icon-btn wobble-delay-1" onclick="openHealthMenu()"><img src="shield.svg" class="icon" alt="Saúde">Saúde</button>
-          <button class="btn small icon-btn wobble-delay-2" onclick="openHistoryMenu()"><img src="calendar.svg" class="icon" alt="Histórico">Histórico</button>
-          <button class="btn small icon-btn wobble-delay-3" onclick="openOfficeMenu()"><img src="wallet.svg" class="icon" alt="Escritórios">Escritórios</button>
-          <button class="btn small icon-btn wobble-delay-4" onclick="openGlossary()"><img src="book.svg" class="icon" alt="Glossário">Glossário</button>
+          <button class="btn small icon-btn wobble-delay-1" onclick="openQuickMenu()"><img src="icons/chart.svg" class="icon" alt="Resumo">Resumo</button>
+          <button class="btn small icon-btn wobble-delay-2" onclick="openMacroMenu()"><img src="icons/shield.svg" class="icon" alt="Macro">Macro</button>
+          <button class="btn small icon-btn wobble-delay-3" onclick="openProfitMenu()"><img src="icons/calendar.svg" class="icon" alt="Lucros">Lucros</button>
+          <button class="btn small icon-btn wobble-delay-1" onclick="openHealthMenu()"><img src="icons/shield.svg" class="icon" alt="Saúde">Saúde</button>
+          <button class="btn small icon-btn wobble-delay-2" onclick="openHistoryMenu()"><img src="icons/calendar.svg" class="icon" alt="Histórico">Histórico</button>
+          <button class="btn small icon-btn wobble-delay-3" onclick="openOfficeMenu()"><img src="icons/wallet.svg" class="icon" alt="Escritórios">Escritórios</button>
+          <button class="btn small icon-btn wobble-delay-4" onclick="openGlossary()"><img src="icons/book.svg" class="icon" alt="Glossário">Glossário</button>
+          <button class="btn small icon-btn wobble-delay-1" onclick="openStaffMenu()"><img src="icons/users.svg" class="icon" alt="Funcionários">Funcionários</button>
         </div>
       </div>
 
@@ -147,6 +157,20 @@
           <div class="card pad">
             <div class="card-title"><h3>Custos fixos</h3><span class="badge amber">Mensal</span></div>
             <div id="cost-breakdown"></div>
+          </div>
+        </div>
+        <div class="grid grid-2" style="margin-bottom:12px">
+          <div class="card pad">
+            <div class="card-title"><h3>Funcionários</h3><span class="badge green">Equipe</span></div>
+            <div id="staff-panel"></div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:12px">
+              <button class="btn small primary" onclick="openStaffMenu()">Gerenciar equipe</button>
+            </div>
+          </div>
+          <div class="card pad">
+            <div class="card-title"><h3>Capacidade</h3><span class="badge blue">Limite</span></div>
+            <div class="tiny">A capacidade total depende dos escritórios próprios e alugados.</div>
+            <div class="tiny" style="margin-top:8px">Se a empresa perder espaço, as demissões automáticas acontecem na hora.</div>
           </div>
         </div>
         <div class="log" id="log"></div>

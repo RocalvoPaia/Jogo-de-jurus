@@ -387,7 +387,7 @@ const getGameData = () =>
 
 const state = {
   cash: 180000,
-  debt: 45000,
+  debt: 15000,
   debtRate: 0.043,
   debtTerms: 12,
   creditScore: 560,
@@ -1098,7 +1098,7 @@ function monthlyTick() {
 
 function startGame() {
   state.cash = 180000;
-  state.debt = 45000;
+  state.debt = 15000;
   state.debtRate = 0.043;
   state.debtTerms = 12;
   state.creditScore = 560;

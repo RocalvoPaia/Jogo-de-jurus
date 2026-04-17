@@ -179,5 +179,72 @@ window.TERMS = {
     short: "Espalhar risco em várias opções.",
     explanation: "Em vez de depender de uma só aposta, a empresa distribui recursos, clientes ou investimentos em mais de uma frente para reduzir a chance de perda grande.",
     analogy: "Não colocar todos os ovos na mesma cesta."
-  }
+  },
+  patrimonio: {
+    title: "Patrimônio",
+    short: "Tudo que a empresa possui, menos o que ainda deve.",
+    explanation: "O patrimônio é uma visão mais ampla da saúde patrimonial da empresa. Ele considera caixa, ativos e investimentos, mas também desconta dívidas e obrigações pendentes.",
+    analogy: "É o valor líquido do que realmente pertence à empresa."
+  },
+  folha_pagamento: {
+    title: "Folha de pagamento",
+    short: "Total mensal gasto com funcionários.",
+    explanation: "A folha de pagamento reúne salários, encargos e custos ligados à equipe. Quando a folha cresce sem aumento de produtividade, a empresa sente a pressão rapidamente.",
+    analogy: "É o peso mensal de manter a equipe rodando."
+  },
+  poder_trabalho: {
+    title: "Poder de trabalho",
+    short: "Força produtiva gerada pela equipe.",
+    explanation: "É uma medida prática de quanto a equipe consegue produzir. Ela sobe com mais funcionários, treinamento e bom humor, e cai quando o escritório está ruim ou a moral desaba.",
+    analogy: "É o motor humano da empresa."
+  },
+  clima_organizacional: {
+    title: "Clima organizacional",
+    short: "O humor geral do time.",
+    explanation: "O clima organizacional mostra como a equipe se sente no dia a dia. Salário, estrutura, carga de trabalho e monotonia alteram esse clima o tempo todo.",
+    analogy: "É a temperatura emocional do escritório."
+  },
+  treinamento: {
+    title: "Treinamento",
+    short: "Investimento em habilidade e processo.",
+    explanation: "Treinar a equipe melhora eficiência, reduz erros e aumenta a capacidade de lidar com momentos complicados. Normalmente custa dinheiro antes de gerar retorno.",
+    analogy: "É aprender a fazer mais com a mesma equipe."
+  },
+  monotonia: {
+    title: "Monotonia",
+    short: "Cansaço mental acumulado pela rotina.",
+    explanation: "Quando a rotina fica repetitiva demais e nada melhora o ambiente, a monotonia cresce. Isso derruba moral e facilita eventos negativos.",
+    analogy: "É o desgaste invisível da repetição."
+  },
+  rotatividade: {
+    title: "Rotatividade",
+    short: "Saída e entrada frequente de funcionários.",
+    explanation: "Rotatividade alta costuma indicar problema de salário, clima ou gestão. Ela aumenta o custo de contratar, treinar e manter a operação estável.",
+    analogy: "É a porta giratória da equipe."
+  },
+  capacidade_escritorio: {
+    title: "Capacidade do escritório",
+    short: "Quantidade máxima de funcionários que cabe no espaço.",
+    explanation: "Cada escritório tem um limite prático de pessoas. Passar desse limite gera aperto, piora a moral e pode forçar demissões automáticas quando a empresa perde espaço.",
+    analogy: "É o teto de gente que o ambiente aguenta."
+  },
+  salario_base: {
+    title: "Salário-base",
+    short: "Valor fixo pago por funcionário antes de ajustes.",
+    explanation: "É a referência usada para calcular a folha mensal. Quando o salário-base sobe, o custo fixo da empresa acompanha e o caixa sente a diferença.",
+    analogy: "É a base do preço da mão de obra."
+  },
+  encargo_trabalhista: {
+    title: "Encargo trabalhista",
+    short: "Custo extra ligado ao trabalho formal.",
+    explanation: "Além do salário, a empresa costuma carregar encargos, impostos e obrigações relacionadas à equipe. Isso encarece a folha e precisa entrar no planejamento.",
+    analogy: "É o custo escondido de ter uma equipe formal."
+  },
+  absenteismo: {
+    title: "Absenteísmo",
+    short: "Faltas e ausências da equipe.",
+    explanation: "Quando funcionários faltam com frequência, a produção cai e a operação perde ritmo. Em jogos e no mundo real, isso costuma vir junto com cansaço e desmotivação.",
+    analogy: "É a ausência que desmonta o cronograma."
+  },
+
 };

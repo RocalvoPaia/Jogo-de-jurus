@@ -2148,3 +2148,14 @@ window.GAME_DATA = {
     ),
   ]);
 })();
+
+(function () {
+  const base = window.GAME_DATA || (window.GAME_DATA = { arcs: [], eventPools: {} });
+  base.phaseThemes = {
+    early: { start: "#eff6ff", end: "#dbeafe", glow: "rgba(79, 70, 229, 0.34)", accent: "#4f46e5" },
+    growth: { start: "#ecfdf5", end: "#d1fae5", glow: "rgba(34, 197, 94, 0.28)", accent: "#22c55e" },
+    pressure: { start: "#fffbeb", end: "#fde68a", glow: "rgba(245, 158, 11, 0.30)", accent: "#f59e0b" },
+    shock: { start: "#fef2f2", end: "#fecaca", glow: "rgba(239, 68, 68, 0.28)", accent: "#ef4444" },
+    recovery: { start: "#f5f3ff", end: "#ddd6fe", glow: "rgba(124, 58, 237, 0.28)", accent: "#7c3aed" },
+  };
+})();
